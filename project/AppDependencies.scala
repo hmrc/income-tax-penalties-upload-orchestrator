@@ -18,11 +18,11 @@ object AppDependencies {
     "uk.gov.hmrc"             %% "bootstrap-test-play-30"     % bootstrapVersion            % Test,
     "uk.gov.hmrc.mongo"       %% "hmrc-mongo-test-play-30"    % hmrcMongoVersion            % Test,
     //"org.mockito"             % "mockito-all"                 % "1.10.19"                   % Test
-    "org.mockito"             %% "mockito-scala-scalatest"    % "1.17.14"                   % Test
+    "org.mockito"             %% "mockito-scala-scalatest"    % "1.17.31"                   % Test
   )
 
   val it = Seq(
 //    "org.mockito"             % "mockito-all"                 % "1.10.19"                   % Test
-    "org.mockito"             %% "mockito-scala-scalatest"    % "1.17.14"                   % Test
+    "org.mockito"             %% "mockito-scala-scalatest"    % "1.17.31"                   % Test
   )
 }

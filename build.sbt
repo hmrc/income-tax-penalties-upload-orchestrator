@@ -11,7 +11,7 @@ lazy val microservice = Project("income-tax-penalties-upload-orchestrator", file
     // https://www.scala-lang.org/2021/01/12/configuring-and-suppressing-warnings.html
     // suppress warnings in generated routes files
     scalacOptions += "-Wconf:src=routes/.*:s",
-    PlayKeys.playDefaultPort := 9184,
+    PlayKeys.playDefaultPort := 9188,
   )
   .settings(resolvers += Resolver.jcenterRepo)
   .settings(CodeCoverageSettings.settings: _*)

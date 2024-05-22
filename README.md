@@ -15,7 +15,7 @@ SDES will pull from file upload, process the file and message is sent back with 
 
 ## Running
 
-This application runs on port 9184.
+This application runs on port 9188.
 
 You can use the `./run.sh` script to run the service.
 
