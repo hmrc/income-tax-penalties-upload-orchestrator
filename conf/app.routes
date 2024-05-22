@@ -1,3 +1,5 @@
 # microservice specific routes
 
-GET        /hello-world             uk.gov.hmrc.incometaxpenaltiesuploadorchestrator.controllers.MicroserviceHelloWorldController.hello
+POST        /new-notifications                    controllers.OrchestratorController.receiveSDESNotifications
+
+POST        /sdes-callback                        controllers.SDESCallbackController.handleCallback
