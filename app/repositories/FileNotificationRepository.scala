@@ -27,6 +27,7 @@ import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.model.Updates.inc
 import org.mongodb.scala.model.{IndexModel, IndexOptions}
 import play.api.libs.json.{Format, Json, OFormat}
+import repositories.FileNotificationRepository.inProgressStatuses
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
@@ -41,6 +42,10 @@ import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+object FileNotificationRepository {
+  val inProgressStatuses: Seq[String] = RecordStatusEnum.values.filterNot(_==FILE_PROCESSED_IN_SDES).map(_.toString).toList
+}
+
 @Singleton
 class FileNotificationRepository @Inject()(mongoComponent: MongoComponent,
                                            timeMachine: TimeMachine,
@@ -52,7 +57,12 @@ class FileNotificationRepository @Inject()(mongoComponent: MongoComponent,
     indexes = Seq(
       IndexModel(ascending("reference"), IndexOptions().unique(true)),
       IndexModel(ascending("status")),
-      IndexModel(ascending("createdAt"), IndexOptions().expireAfter(appConfig.notificationTtl, TimeUnit.DAYS))
+      IndexModel(ascending("updatedAt"), IndexOptions().name("inProgressUpdatedAtIndex")
+        .partialFilterExpression(in("status", inProgressStatuses:_*))
+        .expireAfter(appConfig.inProgressTtl, TimeUnit.DAYS)),
+      IndexModel(ascending("updatedAt"), IndexOptions().name("completedAtIndex")
+        .partialFilterExpression(equal("status", FILE_PROCESSED_IN_SDES.toString))
+        .expireAfter(appConfig.completedTtl, TimeUnit.DAYS)),
     )) with MongoJavatimeFormats {
 
   private implicit val crypto: Encrypter with Decrypter = cryptoProvider.getCrypto
@@ -82,7 +92,7 @@ class FileNotificationRepository @Inject()(mongoComponent: MongoComponent,
   }
 
   def updateFileNotification(reference: String, updatedStatus: RecordStatusEnum.Value): Future[SDESNotificationRecord] = {
-    val result = collection.find(equal("reference", reference)).toFuture().map(notification => notification)
+    val result = collection.find(equal("reference", reference)).toFuture()
     result.flatMap { records =>
       if(records.nonEmpty && records.head.status.equals(FILE_PROCESSED_IN_SDES)) {
         logger.info(s"[FileNotificationRepository][updateFileNotification] - Record $reference already processed skipping update")
@@ -102,25 +112,21 @@ class FileNotificationRepository @Inject()(mongoComponent: MongoComponent,
   }
 
   def getPendingNotifications(): Future[Seq[SDESNotificationRecord]] = {
-    collection.find(in("status", Seq(
-      RecordStatusEnum.PENDING.toString,
-      RecordStatusEnum.NOT_PROCESSED_PENDING_RETRY.toString,
-      RecordStatusEnum.FAILED_PENDING_RETRY.toString,
-      RecordStatusEnum.FILE_NOT_RECEIVED_IN_SDES_PENDING_RETRY.toString): _*
-    )).map(SDESNotificationRecord.decrypt(_)).toFuture()
+    getNotificationsInState(PENDING, NOT_PROCESSED_PENDING_RETRY, FAILED_PENDING_RETRY, FILE_NOT_RECEIVED_IN_SDES_PENDING_RETRY)
   }
 
-  def getNotificationsInState(state: RecordStatusEnum.Value): Future[Seq[SDESNotificationRecord]] = {
-    collection.find(equal("status",
-      state.toString
-    )).map(SDESNotificationRecord.decrypt(_)).toFuture()
+  def getNotificationsInState(state: RecordStatusEnum.Value*): Future[Seq[SDESNotificationRecord]] = {
+    collection.find(withStatus(state:_*)).map(SDESNotificationRecord.decrypt(_)).toFuture()
   }
 
-  def countRecordsByStatus(status: RecordStatusEnum.Value): Future[Long] = {
-    collection.countDocuments(equal("status", status.toString)).toFuture()
+  def countRecordsByStatus(status: RecordStatusEnum.Value*): Future[Long] = {
+    collection.countDocuments(withStatus(status:_*)).toFuture()
   }
 
   def countAllRecords(): Future[Long] = {
     collection.countDocuments().toFuture()
   }
+
+  private def withStatus(state: RecordStatusEnum.Value*) = in("status", state.map(_.toString):_*)
+
 }

@@ -37,7 +37,9 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
 
   lazy val sdesUrl: String = sdesBaseUrl + s"/notification/fileready"
 
-  lazy val notificationTtl: Long = config.get[Long]("mongo-config.ttlDays")
+  lazy val completedTtl: Long = config.get[Long]("mongo-config.completedTtlDays")
+
+  lazy val inProgressTtl: Long = config.get[Long]("mongo-config.inProgressTtlDays")
 
   lazy val minutesUntilNextAttemptOnCallbackFailure: Int = config.get[Int]("notifications.minutesUntilRetryOnCallbackFailure")
 
