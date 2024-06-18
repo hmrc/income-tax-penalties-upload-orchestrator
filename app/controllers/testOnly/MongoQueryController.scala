@@ -16,6 +16,9 @@
 
 package controllers.testOnly
 
+import models.notification.RecordStatusEnum
+import play.api.libs.json.Json
+
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import repositories.FileNotificationRepository
@@ -31,6 +34,14 @@ class MongoQueryController @Inject()(cc: ControllerComponents,
         numberOfRecords => {
           Ok(s"$numberOfRecords")
         }
+    }
+  }
+
+  def getNotificationsInState(state: RecordStatusEnum.Value*): Action[AnyContent] = Action.async {
+    repository.getNotificationsInState(state:_*).map {
+      result => {
+        Ok(Json.toJson(result))
+      }
     }
   }
 }
