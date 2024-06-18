@@ -11,3 +11,5 @@
 
 # Add all the application routes to the prod.routes file
 ->         /                          prod.Routes
+GET        /income-tax-penalties-upload-orchestrator/test-only/bearer-token    controllers.testOnly.BearerTokenController.getBearerToken(serviceName: String)
+GET        /income-tax-penalties-upload-orchestrator/test-only/number-of-records   controllers.testOnly.MongoQueryController.getNumberOfRecords
