@@ -65,6 +65,15 @@ class FileNotificationRepository @Inject()(mongoComponent: MongoComponent,
         .expireAfter(appConfig.completedTtl, TimeUnit.DAYS)),
     )) with MongoJavatimeFormats {
 
+  override def ensureSchema(): Future[Unit] = {
+    import scala.jdk.CollectionConverters._
+    logger.info("MongoDB server short description: " + mongoComponent.client.getClusterDescription.getShortDescription)
+    logger.info("MongoDB isIncompatiblyNewerThanDriver: " + mongoComponent.client.getClusterDescription.getServerDescriptions.asScala.map(_.isIncompatiblyNewerThanDriver).mkString(", "))
+    logger.info("MongoDB isIncompatiblyOlderThanDriver: " + mongoComponent.client.getClusterDescription.getServerDescriptions.asScala.map(_.isIncompatiblyOlderThanDriver).mkString(", "))
+    logger.info("MongoDB cluster dsecription: " + mongoComponent.client.getClusterDescription)
+    super.ensureSchema()
+  }
+
   private implicit val crypto: Encrypter with Decrypter = cryptoProvider.getCrypto
   implicit val dateFormat: Format[Instant] = instantFormat
   implicit val mongoFormats: OFormat[SDESNotificationRecord] = Json.format[SDESNotificationRecord]
