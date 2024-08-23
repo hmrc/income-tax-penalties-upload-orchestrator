@@ -27,7 +27,7 @@ import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.model.Updates.inc
 import org.mongodb.scala.model.{IndexModel, IndexOptions}
 import play.api.libs.json.{Format, Json, OFormat}
-import repositories.FileNotificationRepository.inProgressStatuses
+import repositories.FileNotificationRepository.{inProgressStatuses, toCamlCase}
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
@@ -44,6 +44,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object FileNotificationRepository {
   val inProgressStatuses: Seq[String] = RecordStatusEnum.values.filterNot(_==FILE_PROCESSED_IN_SDES).map(_.toString).toList
+  def toCamlCase(s: String): String = s.split("_", -1).zipWithIndex.map{case (s,i)=> if (i>0) s.capitalize else s}.mkString
 }
 
 @Singleton
@@ -57,13 +58,15 @@ class FileNotificationRepository @Inject()(mongoComponent: MongoComponent,
     indexes = Seq(
       IndexModel(ascending("reference"), IndexOptions().unique(true)),
       IndexModel(ascending("status")),
-      IndexModel(ascending("updatedAt"), IndexOptions().name("inProgressUpdatedAtIndex")
-        .partialFilterExpression(in("status", inProgressStatuses:_*))
-        .expireAfter(appConfig.inProgressTtl, TimeUnit.DAYS)),
-      IndexModel(ascending("updatedAt"), IndexOptions().name("completedAtIndex")
+      IndexModel(ascending("updatedAt"), IndexOptions().name("fileProcessedInSdesUpdatedAtIndex")
         .partialFilterExpression(equal("status", FILE_PROCESSED_IN_SDES.toString))
         .expireAfter(appConfig.completedTtl, TimeUnit.DAYS)),
-    )) with MongoJavatimeFormats {
+    ) ++ inProgressStatuses.map { status =>
+      IndexModel(ascending("updatedAt"), IndexOptions().name(toCamlCase(s"${status.toLowerCase}_updated_at_index"))
+        .partialFilterExpression(equal("status", status))
+        .expireAfter(appConfig.inProgressTtl, TimeUnit.DAYS))
+    }
+  ) with MongoJavatimeFormats {
 
   private implicit val crypto: Encrypter with Decrypter = cryptoProvider.getCrypto
   implicit val dateFormat: Format[Instant] = instantFormat
