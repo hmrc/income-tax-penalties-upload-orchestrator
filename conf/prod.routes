@@ -1,3 +1,6 @@
 # Add all the application routes to the app.routes file
 ->         /income-tax-penalties-upload-orchestrator              app.Routes
 ->         /                          health.Routes
+
+# FIXME: this does not seem to exist in https://github.com/hmrc/bootstrap-play (which replaced microservice-bootstrap)
+# GET        /admin/metrics             com.kenshoo.play.metrics.MetricsController.metrics
