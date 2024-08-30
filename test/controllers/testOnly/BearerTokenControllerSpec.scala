@@ -17,6 +17,8 @@
 package controllers.testOnly
 
 import base.SpecBase
+import org.mockito.Mockito.*
+import utils.MockitoSugar.mock
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.Configuration

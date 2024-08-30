@@ -17,16 +17,16 @@
 package config
 
 import base.SpecBase
+import org.mockito.Mockito.*
+import utils.MockitoSugar.mock
 import org.mockito.ArgumentMatchers
 import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 class AppConfigSpec extends SpecBase {
-  val mockConfiguration: Configuration = mock[Configuration]
-  val mockServicesConfig: ServicesConfig = mock[ServicesConfig]
   class Setup {
-    reset(mockConfiguration)
-    reset(mockServicesConfig)
+    val mockConfiguration: Configuration = mock[Configuration]
+    val mockServicesConfig: ServicesConfig = mock[ServicesConfig]
   }
 
   "sdesBaseUrl" should {

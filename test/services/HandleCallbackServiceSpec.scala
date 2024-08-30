@@ -19,6 +19,8 @@ package services
 import base.SpecBase
 import models.SDESNotificationRecord
 import models.notification._
+import org.mockito.Mockito.*
+import utils.MockitoSugar.mock
 import org.mockito.ArgumentMatchers.any
 import play.api.test.Helpers._
 import repositories.FileNotificationRepository

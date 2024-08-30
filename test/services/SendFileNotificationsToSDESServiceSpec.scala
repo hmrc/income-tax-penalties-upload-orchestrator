@@ -22,6 +22,8 @@ import connectors.SDESConnector
 import models.FailedJobResponses.{FailedToProcessNotifications, UnknownProcessingException}
 import models.notification._
 import models.{MongoLockResponses, SDESNotificationRecord}
+import org.mockito.Mockito.*
+import utils.MockitoSugar.mock
 import org.mockito.ArgumentMatchers
 import org.scalatest.concurrent.Eventually.eventually
 import play.api.Configuration
@@ -103,14 +105,14 @@ class SendFileNotificationsToSDESServiceSpec extends SpecBase with LogCapturing 
 
   "invoke" should {
     "run the job successfully if there is no notifications" in new Setup {
-      when(mockFileNotificationRepository.getPendingNotifications()).thenReturn(Future.successful(Seq.empty))
+      when(mockFileNotificationRepository.getPendingNotifications).thenReturn(Future.successful(Seq.empty))
       val result = await(service.invoke)
       result.isRight shouldBe true
       result.toOption.get shouldBe "Processed all notifications"
     }
 
     "process the notifications and return Right if they all succeed - only process PENDING notifications where nextAttemptAt <= now" in new Setup {
-      when(mockFileNotificationRepository.getPendingNotifications()).thenReturn(Future.successful(pendingNotifications))
+      when(mockFileNotificationRepository.getPendingNotifications).thenReturn(Future.successful(pendingNotifications))
       when(mockFileNotificationRepository.updateFileNotification(ArgumentMatchers.any())).thenReturn(Future.successful(
         notificationRecord.copy(status = RecordStatusEnum.SENT, updatedAt = LocalDateTime.now().toInstant(ZoneOffset.UTC))
       ))
@@ -126,7 +128,7 @@ class SendFileNotificationsToSDESServiceSpec extends SpecBase with LogCapturing 
     "process the notification and return Right if they all succeed - limit notifications to 10 " +
       "(if more are able to be sent - to prevent overloading downstream)" in new Setup {
       val notifications: Seq[SDESNotificationRecord] = (1 to 15).map(idx => notificationRecord.copy(reference = s"ref$idx"))
-      when(mockFileNotificationRepository.getPendingNotifications()).thenReturn(Future.successful(notifications))
+      when(mockFileNotificationRepository.getPendingNotifications).thenReturn(Future.successful(notifications))
       when(mockFileNotificationRepository.updateFileNotification(ArgumentMatchers.any())).thenReturn(Future.successful(
         notificationRecord.copy(status = RecordStatusEnum.SENT, updatedAt = LocalDateTime.now().toInstant(ZoneOffset.UTC))
       ))
@@ -146,7 +148,7 @@ class SendFileNotificationsToSDESServiceSpec extends SpecBase with LogCapturing 
     }
 
     "process the notifications and return Left if some fail" in new Setup {
-      when(mockFileNotificationRepository.getPendingNotifications()).thenReturn(Future.successful(pendingNotifications))
+      when(mockFileNotificationRepository.getPendingNotifications).thenReturn(Future.successful(pendingNotifications))
       when(mockFileNotificationRepository.updateFileNotification(ArgumentMatchers.any())).thenReturn(Future.successful(
         notificationRecord.copy(status = RecordStatusEnum.SENT, updatedAt = LocalDateTime.now().toInstant(ZoneOffset.UTC))
       ))
@@ -171,7 +173,7 @@ class SendFileNotificationsToSDESServiceSpec extends SpecBase with LogCapturing 
     }
 
     "process the notifications and return Left if all fail" in new Setup {
-      when(mockFileNotificationRepository.getPendingNotifications()).thenReturn(Future.successful(pendingNotifications))
+      when(mockFileNotificationRepository.getPendingNotifications).thenReturn(Future.successful(pendingNotifications))
       when(mockSDESConnector.sendNotificationToSDES(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, "")))
       when(mockFileNotificationRepository.updateFileNotification(ArgumentMatchers.any()))
@@ -198,7 +200,7 @@ class SendFileNotificationsToSDESServiceSpec extends SpecBase with LogCapturing 
         )
         val notificationRecordAsPermanentFailure: SDESNotificationRecord = notificationRecord.copy(numberOfAttempts = 5,
           status = RecordStatusEnum.PERMANENT_FAILURE, updatedAt = mockDateTime)
-        when(mockFileNotificationRepository.getPendingNotifications()).thenReturn(Future.successful(notificationsToSend))
+        when(mockFileNotificationRepository.getPendingNotifications).thenReturn(Future.successful(notificationsToSend))
         when(mockFileNotificationRepository.updateFileNotification(ArgumentMatchers.eq(notificationRecordAsPermanentFailure)))
           .thenReturn(Future.successful(notificationRecordAsPermanentFailure))
         withCaptureOfLoggingFrom(logger) {
@@ -217,7 +219,7 @@ class SendFileNotificationsToSDESServiceSpec extends SpecBase with LogCapturing 
         val notificationsToSend: Seq[SDESNotificationRecord] = Seq(notificationRecord)
         val notificationRecordAsPermanentFailure: SDESNotificationRecord = notificationRecord.copy(status = RecordStatusEnum.PERMANENT_FAILURE,
           updatedAt = mockDateTime)
-        when(mockFileNotificationRepository.getPendingNotifications()).thenReturn(Future.successful(notificationsToSend))
+        when(mockFileNotificationRepository.getPendingNotifications).thenReturn(Future.successful(notificationsToSend))
         when(mockSDESConnector.sendNotificationToSDES(ArgumentMatchers.any())(ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
         when(mockFileNotificationRepository.updateFileNotification(ArgumentMatchers.eq(notificationRecordAsPermanentFailure)))
@@ -238,7 +240,7 @@ class SendFileNotificationsToSDESServiceSpec extends SpecBase with LogCapturing 
         val notificationsToSend: Seq[SDESNotificationRecord] = Seq(notificationRecord)
         val notificationRecordAsPermanentFailure: SDESNotificationRecord = notificationRecord.copy(status = RecordStatusEnum.PERMANENT_FAILURE,
           updatedAt = mockDateTime)
-        when(mockFileNotificationRepository.getPendingNotifications()).thenReturn(Future.successful(notificationsToSend))
+        when(mockFileNotificationRepository.getPendingNotifications).thenReturn(Future.successful(notificationsToSend))
         when(mockSDESConnector.sendNotificationToSDES(ArgumentMatchers.any())(ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, "")))
         when(mockFileNotificationRepository.updateFileNotification(ArgumentMatchers.eq(notificationRecordAsPermanentFailure)))
@@ -259,7 +261,7 @@ class SendFileNotificationsToSDESServiceSpec extends SpecBase with LogCapturing 
         val notificationsToSend: Seq[SDESNotificationRecord] = Seq(notificationRecord)
         val notificationRecordAsPermanentFailure: SDESNotificationRecord = notificationRecord.copy(status = RecordStatusEnum.PERMANENT_FAILURE,
           updatedAt = mockDateTime)
-        when(mockFileNotificationRepository.getPendingNotifications()).thenReturn(Future.successful(notificationsToSend))
+        when(mockFileNotificationRepository.getPendingNotifications).thenReturn(Future.successful(notificationsToSend))
         when(mockSDESConnector.sendNotificationToSDES(ArgumentMatchers.any())(ArgumentMatchers.any()))
           .thenReturn(Future.failed(new Exception("i broke")))
         when(mockFileNotificationRepository.updateFileNotification(ArgumentMatchers.eq(notificationRecordAsPermanentFailure)))
@@ -283,7 +285,7 @@ class SendFileNotificationsToSDESServiceSpec extends SpecBase with LogCapturing 
       )
       val notificationRecordIncreasedAttempt: SDESNotificationRecord = notificationRecord.copy(numberOfAttempts = 2, status = RecordStatusEnum.PENDING,
         nextAttemptAt = mockDateTime.plus(30, MINUTES))
-      when(mockFileNotificationRepository.getPendingNotifications()).thenReturn(Future.successful(notificationsToSend))
+      when(mockFileNotificationRepository.getPendingNotifications).thenReturn(Future.successful(notificationsToSend))
       when(mockSDESConnector.sendNotificationToSDES(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, "")))
       when(mockFileNotificationRepository.updateFileNotification(ArgumentMatchers.eq(notificationRecordIncreasedAttempt)))
@@ -295,7 +297,7 @@ class SendFileNotificationsToSDESServiceSpec extends SpecBase with LogCapturing 
 
     s"return $Left $UnknownProcessingException" when {
       "the repository fails to retrieve notifications" in new Setup {
-        when(mockFileNotificationRepository.getPendingNotifications()).thenReturn(Future.failed(new Exception("I broke")))
+        when(mockFileNotificationRepository.getPendingNotifications).thenReturn(Future.failed(new Exception("I broke")))
         withCaptureOfLoggingFrom(logger) {
           logs => {
             val result = await(service.invoke)
@@ -311,7 +313,7 @@ class SendFileNotificationsToSDESServiceSpec extends SpecBase with LogCapturing 
       "an unknown status is returned from SDES" in new Setup {
         val notificationRecordAsPermanentFailure: SDESNotificationRecord = notificationRecord.copy(status = RecordStatusEnum.PERMANENT_FAILURE,
           updatedAt = mockDateTime)
-        when(mockFileNotificationRepository.getPendingNotifications()).thenReturn(Future.successful(Seq(notificationRecord)))
+        when(mockFileNotificationRepository.getPendingNotifications).thenReturn(Future.successful(Seq(notificationRecord)))
         when(mockSDESConnector.sendNotificationToSDES(ArgumentMatchers.any())(ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(MOVED_PERMANENTLY, "")))
         when(mockFileNotificationRepository.updateFileNotification(ArgumentMatchers.eq(notificationRecordAsPermanentFailure)))

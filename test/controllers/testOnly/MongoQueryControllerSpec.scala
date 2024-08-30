@@ -24,6 +24,8 @@ import play.api.http.Status.OK
 import play.api.mvc.Result
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status, stubControllerComponents}
 import repositories.FileNotificationRepository
+import org.mockito.Mockito.*
+import utils.MockitoSugar.mock
 
 import java.time.{LocalDateTime, ZoneOffset}
 import scala.concurrent.{ExecutionContext, Future}
@@ -39,7 +41,7 @@ class MongoQueryControllerSpec extends SpecBase {
 
   "getNumberOfRecords" should {
     s"return OK (${Status.OK}) with correct number of records" in new Setup {
-      when(mockRepo.countAllRecords()).thenReturn(Future.successful(5))
+      when(mockRepo.countAllRecords()).thenReturn(Future.successful(5L))
       val result: Future[Result] = controller.getNumberOfRecords()(fakeRequest)
       status(result) shouldBe OK
       contentAsString(result) shouldBe "5"

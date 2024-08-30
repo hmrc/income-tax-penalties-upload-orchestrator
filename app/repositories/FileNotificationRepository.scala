@@ -42,6 +42,9 @@ import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+import org.mongodb.scala.SingleObservableFuture
+import org.mongodb.scala.ObservableFuture
+
 object FileNotificationRepository {
   val inProgressStatuses: Seq[String] = RecordStatusEnum.values.filterNot(_==FILE_PROCESSED_IN_SDES).map(_.toString).toList
   def toCamlCase(s: String): String = s.split("_", -1).zipWithIndex.map{case (s,i)=> if (i>0) s.capitalize else s}.mkString
@@ -123,7 +126,7 @@ class FileNotificationRepository @Inject()(mongoComponent: MongoComponent,
     }
   }
 
-  def getPendingNotifications(): Future[Seq[SDESNotificationRecord]] = {
+  def getPendingNotifications: Future[Seq[SDESNotificationRecord]] = {
     getNotificationsInState(PENDING, NOT_PROCESSED_PENDING_RETRY, FAILED_PENDING_RETRY, FILE_NOT_RECEIVED_IN_SDES_PENDING_RETRY)
   }
 

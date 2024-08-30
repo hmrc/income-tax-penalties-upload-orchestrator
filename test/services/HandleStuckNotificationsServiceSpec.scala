@@ -20,6 +20,8 @@ import base.SpecBase
 import models.FailedJobResponses.FailedToProcessNotifications
 import models.notification._
 import models.{MongoLockResponses, SDESNotificationRecord}
+import org.mockito.Mockito.*
+import utils.MockitoSugar.mock
 import org.mockito.ArgumentMatchers
 import org.scalatest.concurrent.Eventually.eventually
 import play.api.Configuration

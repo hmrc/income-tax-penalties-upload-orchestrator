@@ -2,7 +2,9 @@ import scoverage.ScoverageKeys
 import uk.gov.hmrc.DefaultBuildSettings
 
 ThisBuild / majorVersion := 0
-ThisBuild / scalaVersion := "2.13.12"
+ThisBuild / scalaVersion := "3.3.3"
+
+// maxErrors := 1
 
 lazy val microservice = Project("income-tax-penalties-upload-orchestrator", file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)

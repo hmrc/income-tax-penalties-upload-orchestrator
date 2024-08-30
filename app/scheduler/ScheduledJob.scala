@@ -23,6 +23,8 @@ import play.api.inject.ApplicationLifecycle
 import scheduler.SchedulingActor.ScheduledMessage
 import utils.Logger.logger
 
+//import org.apache.pekko.`extension`.quartz.QuartzSchedulerExtension
+
 import scala.concurrent.Future
 
 trait ScheduledJob {

@@ -19,18 +19,20 @@ package connector
 import base.SpecBase
 import config.AppConfig
 import connectors.SDESConnector
-import models.notification._
+import models.notification.*
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.*
+import utils.MockitoSugar.mock
 import org.mockito.{ArgumentCaptor, ArgumentMatchers}
-import play.api.test.Helpers._
-import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpClient, HttpResponse}
+import play.api.http.Status.OK
+import play.api.test.Helpers.*
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class SDESConnectorSpec extends SpecBase {
-  val mockHttpClient: HttpClient = mock[HttpClient]
-  val mockAppConfig: AppConfig = mock[AppConfig]
-
   val notification: SDESNotification = SDESNotification(
     informationType = "info",
     file = SDESNotificationFile(
@@ -45,7 +47,8 @@ class SDESConnectorSpec extends SpecBase {
   )
 
   class Setup {
-    reset(mockAppConfig, mockHttpClient)
+    val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
+    val mockAppConfig: AppConfig = mock[AppConfig]
     val connector: SDESConnector = new SDESConnector(mockAppConfig, mockHttpClient)
   }
 
@@ -54,14 +57,21 @@ class SDESConnectorSpec extends SpecBase {
       when(mockAppConfig.sdesUrl).thenReturn("stub/notifications/fileready")
       when(mockAppConfig.sdesOutboundBearerToken).thenReturn("Bearer 12345")
       val hcArgumentCaptor: ArgumentCaptor[HeaderCarrier] = ArgumentCaptor.forClass(classOf[HeaderCarrier])
-      when(mockHttpClient.POST[SDESNotification, HttpResponse](ArgumentMatchers.eq("stub/notifications/fileready"),
-        ArgumentMatchers.any(),
-        ArgumentMatchers.any())
-        (ArgumentMatchers.any(),
-          ArgumentMatchers.any(),
-          hcArgumentCaptor.capture(),
-          ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
+
+//      when(mockHttpClient.POST[SDESNotification, HttpResponse](ArgumentMatchers.eq("stub/notifications/fileready"),
+//        ArgumentMatchers.any(),
+//        ArgumentMatchers.any())
+//        (ArgumentMatchers.any(),
+//          ArgumentMatchers.any(),
+//          hcArgumentCaptor.capture(),
+//          ArgumentMatchers.any()))
+//        .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
+
+      when(mockHttpClient.post(any())(any())
+        .withBody(any())(any(), any(), any())
+        .execute(any(), any())
+      ).thenReturn(Future.successful(HttpResponse(OK, "")))
+
       val result: HttpResponse = await(connector.sendNotificationToSDES(notification))
       result.status shouldBe NO_CONTENT
       hcArgumentCaptor.getValue.authorization shouldBe Some(Authorization("Bearer 12345"))

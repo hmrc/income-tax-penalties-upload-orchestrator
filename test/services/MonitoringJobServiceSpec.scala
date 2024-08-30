@@ -19,6 +19,8 @@ package services
 import base.SpecBase
 import models.MongoLockResponses
 import models.notification.RecordStatusEnum
+import org.mockito.Mockito.*
+import utils.MockitoSugar.mock
 import org.mockito.ArgumentMatchers
 import org.scalatest.concurrent.Eventually.eventually
 import play.api.Configuration

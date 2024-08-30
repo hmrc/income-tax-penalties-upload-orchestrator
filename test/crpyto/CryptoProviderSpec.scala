@@ -19,6 +19,8 @@ package crpyto
 import base.SpecBase
 import com.typesafe.config.Config
 import crypto.{CryptoProvider, NoCrypto}
+import org.mockito.Mockito.*
+import utils.MockitoSugar.mock
 import org.mockito.ArgumentMatchers
 import play.api.Configuration
 
