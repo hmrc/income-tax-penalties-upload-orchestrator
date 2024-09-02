@@ -56,16 +56,6 @@ class SDESConnectorSpec extends SpecBase {
       when(mockAppConfig.sdesUrl).thenReturn("http://foo/stub/notifications/fileready")
       when(mockAppConfig.sdesOutboundBearerToken).thenReturn("Bearer 12345")
       val hcArgumentCaptor: ArgumentCaptor[HeaderCarrier] = ArgumentCaptor.forClass(classOf[HeaderCarrier])
-
-//      when(mockHttpClient.POST[SDESNotification, HttpResponse](ArgumentMatchers.eq("stub/notifications/fileready"),
-//        ArgumentMatchers.any(),
-//        ArgumentMatchers.any())
-//        (ArgumentMatchers.any(),
-//          ArgumentMatchers.any(),
-//          hcArgumentCaptor.capture(),
-//          ArgumentMatchers.any()))
-//        .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
-
       when(mockHttpClient.post(any())(hcArgumentCaptor.capture())
         .setHeader(any())
         .withBody(any())(any(), any(), any())
