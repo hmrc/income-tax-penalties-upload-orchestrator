@@ -19,16 +19,17 @@ package services
 import base.SpecBase
 import models.MongoLockResponses
 import models.notification.RecordStatusEnum
-import org.mockito.Mockito.*
-import utils.MockitoSugar.mock
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.*
 import org.scalatest.concurrent.Eventually.eventually
 import play.api.Configuration
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repositories.FileNotificationRepository
 import uk.gov.hmrc.mongo.lock.{Lock, MongoLockRepository}
 import utils.LogCapturing
 import utils.Logger.logger
+import utils.MockitoSugar.{mock, varArgsEq}
 import utils.PagerDutyHelper.PagerDutyKeys
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -63,15 +64,14 @@ class MonitoringJobServiceSpec extends SpecBase with LogCapturing {
 
   "invoke" should {
     "return the count of all records by Status and log them out" in new Setup {
-      when(mockRepo.countRecordsByStatus(ArgumentMatchers.eq(RecordStatusEnum.PENDING))).thenReturn(Future.successful(1L))
-      when(mockRepo.countRecordsByStatus(ArgumentMatchers.eq(RecordStatusEnum.SENT))).thenReturn(Future.successful(2L))
-      when(mockRepo.countRecordsByStatus(ArgumentMatchers.eq(RecordStatusEnum.FILE_RECEIVED_IN_SDES))).thenReturn(Future.successful(3L))
-      when(mockRepo.countRecordsByStatus(ArgumentMatchers.eq(RecordStatusEnum.FILE_NOT_RECEIVED_IN_SDES_PENDING_RETRY))).thenReturn(Future.successful(4L))
-      when(mockRepo.countRecordsByStatus(ArgumentMatchers.eq(RecordStatusEnum.FILE_PROCESSED_IN_SDES))).thenReturn(Future.successful(5L))
-      when(mockRepo.countRecordsByStatus(ArgumentMatchers.eq(RecordStatusEnum.FAILED_PENDING_RETRY))).thenReturn(Future.successful(6L))
-      when(mockRepo.countRecordsByStatus(ArgumentMatchers.eq(RecordStatusEnum.NOT_PROCESSED_PENDING_RETRY))).thenReturn(Future.successful(7L))
-      when(mockRepo.countRecordsByStatus(ArgumentMatchers.eq(RecordStatusEnum.PERMANENT_FAILURE))).thenReturn(Future.successful(8L))
-
+      when(mockRepo.countRecordsByStatus(varArgsEq(RecordStatusEnum.PENDING))).thenReturn(Future.successful(1L))
+      when(mockRepo.countRecordsByStatus(varArgsEq(RecordStatusEnum.SENT))).thenReturn(Future.successful(2L))
+      when(mockRepo.countRecordsByStatus(varArgsEq(RecordStatusEnum.FILE_RECEIVED_IN_SDES))).thenReturn(Future.successful(3L))
+      when(mockRepo.countRecordsByStatus(varArgsEq(RecordStatusEnum.FILE_NOT_RECEIVED_IN_SDES_PENDING_RETRY))).thenReturn(Future.successful(4L))
+      when(mockRepo.countRecordsByStatus(varArgsEq(RecordStatusEnum.FILE_PROCESSED_IN_SDES))).thenReturn(Future.successful(5L))
+      when(mockRepo.countRecordsByStatus(varArgsEq(RecordStatusEnum.FAILED_PENDING_RETRY))).thenReturn(Future.successful(6L))
+      when(mockRepo.countRecordsByStatus(varArgsEq(RecordStatusEnum.NOT_PROCESSED_PENDING_RETRY))).thenReturn(Future.successful(7L))
+      when(mockRepo.countRecordsByStatus(varArgsEq(RecordStatusEnum.PERMANENT_FAILURE))).thenReturn(Future.successful(8L))
 
       withCaptureOfLoggingFrom(logger){
         logs => {

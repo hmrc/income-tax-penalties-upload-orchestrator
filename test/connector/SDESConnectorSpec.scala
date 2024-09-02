@@ -22,9 +22,8 @@ import connectors.SDESConnector
 import models.notification.*
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
-import utils.MockitoSugar.mock
+import utils.MockitoSugar.{mock, deepMock}
 import org.mockito.{ArgumentCaptor, ArgumentMatchers}
-import play.api.http.Status.OK
 import play.api.test.Helpers.*
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpResponse}
@@ -47,14 +46,14 @@ class SDESConnectorSpec extends SpecBase {
   )
 
   class Setup {
-    val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
+    val mockHttpClient: HttpClientV2 = deepMock[HttpClientV2]
     val mockAppConfig: AppConfig = mock[AppConfig]
     val connector: SDESConnector = new SDESConnector(mockAppConfig, mockHttpClient)
   }
 
   "sendNotificationsToSDES" should {
     "post the notification to the app config value and return the result" in new Setup {
-      when(mockAppConfig.sdesUrl).thenReturn("stub/notifications/fileready")
+      when(mockAppConfig.sdesUrl).thenReturn("http://foo/stub/notifications/fileready")
       when(mockAppConfig.sdesOutboundBearerToken).thenReturn("Bearer 12345")
       val hcArgumentCaptor: ArgumentCaptor[HeaderCarrier] = ArgumentCaptor.forClass(classOf[HeaderCarrier])
 
@@ -67,10 +66,11 @@ class SDESConnectorSpec extends SpecBase {
 //          ArgumentMatchers.any()))
 //        .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
 
-      when(mockHttpClient.post(any())(any())
+      when(mockHttpClient.post(any())(hcArgumentCaptor.capture())
+        .setHeader(any())
         .withBody(any())(any(), any(), any())
         .execute(any(), any())
-      ).thenReturn(Future.successful(HttpResponse(OK, "")))
+      ).thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
 
       val result: HttpResponse = await(connector.sendNotificationToSDES(notification))
       result.status shouldBe NO_CONTENT

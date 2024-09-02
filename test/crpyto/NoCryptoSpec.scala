@@ -18,10 +18,8 @@ package crpyto
 
 import base.SpecBase
 import crypto.NoCrypto
-import uk.gov.hmrc.crypto.{Crypted, PlainBytes, PlainText}
 import org.mockito.Mockito.*
-import utils.MockitoSugar.mock
-import org.mockito.ArgumentMatchers
+import uk.gov.hmrc.crypto.{Crypted, PlainBytes, PlainText}
 
 import java.nio.charset.StandardCharsets
 import java.util.Base64

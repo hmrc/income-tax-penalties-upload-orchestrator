@@ -16,10 +16,20 @@
 
 package utils
 
-import org.mockito.Mockito
+import org.mockito.ArgumentMatchers.argThat
+import org.mockito.{ArgumentMatcher, Mockito}
+import org.mockito.Mockito.RETURNS_DEEP_STUBS
+
 import scala.reflect.ClassTag
-import scala.reflect._
+import scala.reflect.*
 
 object MockitoSugar {
   def mock[T: ClassTag]: T = Mockito.mock(classTag[T].runtimeClass.asInstanceOf[Class[T]])
+  def deepMock[T: ClassTag]: T = Mockito.mock(classTag[T].runtimeClass.asInstanceOf[Class[T]], RETURNS_DEEP_STUBS)
+
+  def varArgsEq[T](required: T*): T = argThat(new ArgumentMatcher[Any] {
+    def matches(v: Any): Boolean = required == v.asInstanceOf[Seq[T]]
+    override def toString: String = s"[" + required.mkString(",") + "]"
+  }.asInstanceOf[ArgumentMatcher[T]])
+
 }

@@ -32,8 +32,6 @@ class SDESConnector @Inject()(config: AppConfig,
                               httpClient: HttpClientV2) {
 
   def sendNotificationToSDES(notification: SDESNotification)(implicit ec: ExecutionContext): Future[HttpResponse] = {
-
-
     val sdesHeaders = Seq(
       "x-client-id" -> config.sdesOutboundBearerToken,
       "Content-Type" -> "application/json"

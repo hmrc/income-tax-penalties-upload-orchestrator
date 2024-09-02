@@ -20,24 +20,21 @@ import base.SpecBase
 import models.SDESFileNotificationEnum.*
 import models.notification.RecordStatusEnum.*
 import models.{Properties, SDESCallback, SDESFileNotificationEnum}
-import SDESFileNotificationEnum.given
-import org.mockito.Mockito.*
-import utils.MockitoSugar.mock
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.*
 import org.scalatest.concurrent.Eventually.eventually
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, NO_CONTENT}
-import play.api.libs.json.{JsObject, JsString, JsValue, Json}
+import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.mvc.Result
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status, stubControllerComponents}
 import services.HandleCallbackService
 import services.monitoring.AuditService
 import utils.LogCapturing
 import utils.Logger.logger
+import utils.MockitoSugar.mock
 import utils.PagerDutyHelper.PagerDutyKeys
 import utils.PagerDutyHelper.PagerDutyKeys.FAILED_TO_PROCESS_FILE_NOTIFICATION
-import org.mockito.Mockito.*
-import utils.MockitoSugar.mock
 
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
