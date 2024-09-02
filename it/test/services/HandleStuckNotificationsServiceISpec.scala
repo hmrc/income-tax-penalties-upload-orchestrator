@@ -30,6 +30,8 @@ import utils.{IntegrationSpecCommonBase, LogCapturing}
 import java.time.temporal.ChronoUnit.{SECONDS, MINUTES}
 import java.time.{Instant, LocalDateTime, ZoneOffset}
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
+import org.mongodb.scala.SingleObservableFuture
+import org.mongodb.scala.ObservableFuture
 
 class HandleStuckNotificationsServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
   val lockRepository: MongoLockRepository = injector.instanceOf[MongoLockRepository]

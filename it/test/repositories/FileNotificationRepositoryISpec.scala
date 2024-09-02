@@ -28,6 +28,8 @@ import utils.IntegrationSpecCommonBase
 import java.time.temporal.ChronoUnit
 import java.time.{LocalDateTime, ZoneId, ZoneOffset}
 import scala.concurrent.Future
+import org.mongodb.scala.SingleObservableFuture
+import org.mongodb.scala.ObservableFuture
 
 class FileNotificationRepositoryISpec extends IntegrationSpecCommonBase {
   lazy val repository: FileNotificationRepository = injector.instanceOf[FileNotificationRepository]
@@ -95,7 +97,7 @@ class FileNotificationRepositoryISpec extends IntegrationSpecCommonBase {
 
       await(repository.insertFileNotifications(Seq(notificationRecordInPending, notificationRecord2, notificationRecord3, notificationRecord6,
         notificationRecordPendingRetry, notificationRecordNotProcessedPendingRetry)))
-      val result = await(repository.getPendingNotifications())
+      val result = await(repository.getPendingNotifications)
       result shouldBe Seq(notificationRecordPendingRetry, notificationRecord6, notificationRecordNotProcessedPendingRetry, notificationRecordInPending, notificationRecord2)
     }
 
@@ -112,7 +114,7 @@ class FileNotificationRepositoryISpec extends IntegrationSpecCommonBase {
         )
         val notificationRecord2: SDESNotificationRecord = notificationRecordInPending.copy(reference = "ref3", status = RecordStatusEnum.SENT)
         await(repository.insertFileNotifications(Seq(notificationRecordInPending, notificationRecord2)))
-        val result = await(repository.getPendingNotifications())
+        val result = await(repository.getPendingNotifications)
         result shouldBe Seq(notificationRecordInPending)
       }
     }
@@ -139,9 +141,9 @@ class FileNotificationRepositoryISpec extends IntegrationSpecCommonBase {
         updatedAt = dateTimeNow.toInstant(ZoneOffset.UTC)
       )
       await(repository.insertFileNotifications(Seq(notificationRecordInPending)))
-      await(repository.getPendingNotifications()).size shouldBe 1
+      await(repository.getPendingNotifications).size shouldBe 1
       await(repository.updateFileNotification(updatedNotification))
-      await(repository.getPendingNotifications()).size shouldBe 0
+      await(repository.getPendingNotifications).size shouldBe 0
       await(repository.collection.find().map(SDESNotificationRecord.decrypt(_)).toFuture()).head shouldBe updatedNotification
     }
   }

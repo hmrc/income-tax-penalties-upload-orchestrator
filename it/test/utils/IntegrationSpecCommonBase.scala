@@ -28,8 +28,8 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.ws.{WSClient, WSRequest}
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 
-trait IntegrationSpecCommonBase extends AnyWordSpec with GuiceOneServerPerSuite with
-  BeforeAndAfterAll with BeforeAndAfterEach with TestSuite with WiremockHelper {
+trait IntegrationSpecCommonBase extends AnyWordSpec with GuiceOneServerPerSuite with BeforeAndAfterAll
+  with BeforeAndAfterEach with TestSuite with WiremockHelper {
 
   lazy val injector: Injector = app.injector
 

@@ -18,7 +18,7 @@ package controllers.testOnly
 
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.result.DeleteResult
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+//import org.scalatest.matchers.should.ArgumentMatchers.convertToAnyShouldWrapper
 import play.api.http.Status.OK
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSResponse
@@ -27,8 +27,10 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{await, contentAsString, defaultAwaitTimeout, status}
 import repositories.FileNotificationRepository
 import utils.IntegrationSpecCommonBase
-
+import org.mongodb.scala.SingleObservableFuture
+import org.scalatest.matchers.should.Matchers.shouldBe
 import scala.concurrent.Future
+import play.api.libs.ws.writeableOf_JsValue
 
 class MongoQueryControllerISpec extends IntegrationSpecCommonBase {
 

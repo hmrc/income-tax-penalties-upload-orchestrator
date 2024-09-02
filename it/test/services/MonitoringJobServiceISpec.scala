@@ -28,6 +28,7 @@ import utils.{IntegrationSpecCommonBase, LogCapturing}
 
 import java.time.{LocalDateTime, ZoneOffset}
 import scala.concurrent.duration.DurationInt
+import org.mongodb.scala.SingleObservableFuture
 
 class MonitoringJobServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
   class Setup {

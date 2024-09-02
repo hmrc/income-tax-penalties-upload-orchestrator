@@ -19,15 +19,19 @@ package controllers
 import models.SDESNotificationRecord
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.result.DeleteResult
-import org.scalatest.matchers.should.Matchers._
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSResponse
-import play.api.test.Helpers.{await, _}
+import play.api.test.Helpers.await
 import repositories.FileNotificationRepository
 import utils.Logger.logger
 import utils.PagerDutyHelper.PagerDutyKeys
 import utils.{IntegrationSpecCommonBase, LogCapturing}
-
+import org.mongodb.scala.SingleObservableFuture
+import org.mongodb.scala.ObservableFuture
+import play.api.test.Helpers.defaultAwaitTimeout
+import play.api.libs.ws.writeableOf_JsValue
+import org.scalatest.matchers.should.Matchers.shouldBe
+import play.api.http.Status.*
 import scala.concurrent.Future
 
 class OrchestratorControllerISpec extends IntegrationSpecCommonBase with LogCapturing {
@@ -83,6 +87,8 @@ class OrchestratorControllerISpec extends IntegrationSpecCommonBase with LogCapt
     }
 
     "return BAD_REQUEST (400)" when {
+      import play.api.libs.ws.writeableOf_String
+
       "no JSON body is in the request" in new Setup {
         val result: WSResponse = await(buildClientForRequestToApp(uri = "/new-notifications").post(
           ""

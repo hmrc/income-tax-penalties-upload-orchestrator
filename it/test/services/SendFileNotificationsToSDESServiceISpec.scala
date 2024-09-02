@@ -32,6 +32,8 @@ import utils.{IntegrationSpecCommonBase, LogCapturing}
 import java.time.temporal.ChronoUnit.{MINUTES, SECONDS}
 import java.time.{Instant, LocalDateTime, ZoneId, ZoneOffset}
 import scala.concurrent.duration.DurationInt
+import org.mongodb.scala.SingleObservableFuture
+import org.mongodb.scala.ObservableFuture
 
 class SendFileNotificationsToSDESServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
   val lockRepository: MongoLockRepository = injector.instanceOf[MongoLockRepository]
@@ -146,7 +148,7 @@ class SendFileNotificationsToSDESServiceISpec extends IntegrationSpecCommonBase 
           result.isLeft shouldBe true
           result.left.toOption.get shouldBe FailedToProcessNotifications
           logs.exists(_.getMessage.equals("[SendFileNotificationsToSDESService][invoke] - Received 500 status code from connector call to SDES with response body: Something broke")) shouldBe true
-          val pendingNotificationsInRepo: Seq[SDESNotificationRecord] = await(notificationRepo.getPendingNotifications())
+          val pendingNotificationsInRepo: Seq[SDESNotificationRecord] = await(notificationRepo.getPendingNotifications)
           val firstNotification: SDESNotificationRecord = pendingNotificationsInRepo.find(_.reference == "ref").get
           val secondNotification: SDESNotificationRecord = pendingNotificationsInRepo.find(_.reference == "ref1").get
           val thirdNotification: SDESNotificationRecord = pendingNotificationsInRepo.find(_.reference == "ref3").get

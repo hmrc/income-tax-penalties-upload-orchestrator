@@ -22,6 +22,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import utils.IntegrationSpecCommonBase
+import play.api.libs.ws.writeableOf_JsValue
 
 class SDESCallbackControllerISpec extends IntegrationSpecCommonBase{
   val controller: SDESCallbackController = injector.instanceOf[SDESCallbackController]
@@ -58,6 +59,7 @@ class SDESCallbackControllerISpec extends IntegrationSpecCommonBase{
 
     "return BAD_REQUEST (400)" when {
       "no JSON body is in the request" in {
+        import play.api.libs.ws.writeableOf_String
         val result: WSResponse = await(buildClientForRequestToApp(uri = "/sdes-callback").post(
           ""
         ))
