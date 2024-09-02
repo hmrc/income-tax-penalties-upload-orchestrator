@@ -19,7 +19,7 @@ lazy val microservice = Project("income-tax-penalties-upload-orchestrator", file
     PlayKeys.playDefaultPort := 9188,
   )
   .settings(resolvers += Resolver.jcenterRepo)
-  .settings(CodeCoverageSettings.settings: _*)
+  .settings(CodeCoverageSettings.settings*)
   .settings(
     ScoverageKeys.coverageExcludedPackages := "controllers.testOnly.*",
     ScoverageKeys.coverageExcludedFiles := "<empty>;Reverse.*;..*components.*;" +
