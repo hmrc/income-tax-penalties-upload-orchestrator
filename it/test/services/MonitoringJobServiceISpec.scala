@@ -17,10 +17,10 @@
 package services
 
 import models.SDESNotificationRecord
-import models.notification._
-import org.mongodb.scala.Document
-import org.scalatest.matchers.should.Matchers._
-import play.api.test.Helpers._
+import models.notification.*
+import org.mongodb.scala.{Document, SingleObservableFuture}
+import org.scalatest.matchers.should.Matchers.*
+import play.api.test.Helpers.*
 import repositories.FileNotificationRepository
 import uk.gov.hmrc.mongo.lock.MongoLockRepository
 import utils.Logger.logger

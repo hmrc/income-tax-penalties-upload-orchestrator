@@ -18,6 +18,8 @@ package services
 
 import base.SpecBase
 import models.notification._
+import org.mockito.Mockito.*
+import utils.MockitoSugar.mock
 import org.mockito.ArgumentMatchers
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import repositories.FileNotificationRepository

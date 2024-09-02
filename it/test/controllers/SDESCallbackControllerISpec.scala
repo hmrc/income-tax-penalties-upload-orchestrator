@@ -16,10 +16,10 @@
 
 package controllers
 
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers.*
 import play.api.http.Status.{BAD_REQUEST, NO_CONTENT}
 import play.api.libs.json.{JsValue, Json}
-import play.api.libs.ws.WSResponse
+import play.api.libs.ws.{WSResponse, writeableOf_JsValue}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import utils.IntegrationSpecCommonBase
 
@@ -58,6 +58,7 @@ class SDESCallbackControllerISpec extends IntegrationSpecCommonBase{
 
     "return BAD_REQUEST (400)" when {
       "no JSON body is in the request" in {
+        import play.api.libs.ws.writeableOf_String
         val result: WSResponse = await(buildClientForRequestToApp(uri = "/sdes-callback").post(
           ""
         ))

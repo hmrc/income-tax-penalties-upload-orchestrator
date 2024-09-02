@@ -19,6 +19,8 @@ package controllers
 import base.SpecBase
 import config.AppConfig
 import models.notification._
+import org.mockito.Mockito.*
+import utils.MockitoSugar.mock
 import org.mockito.ArgumentMatchers
 import org.scalatest.concurrent.Eventually.eventually
 import play.api.libs.json.{JsValue, Json}

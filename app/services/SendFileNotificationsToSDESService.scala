@@ -61,7 +61,7 @@ class SendFileNotificationsToSDESService @Inject()(
   override def invoke: Future[Either[ScheduleStatus.JobFailed, String]] = {
     tryLock {
       logger.info(s"[$jobName][invoke] - Job started")
-      fileNotificationRepository.getPendingNotifications().flatMap {
+      fileNotificationRepository.getPendingNotifications.flatMap {
         notifications => {
           logger.info(s"[SendFileNotificationsToSDESService][invoke] - Amount of notifications: ${notifications.size} before filtering")
           val notificationCandidates = notifications.filter(notification =>

@@ -19,10 +19,10 @@ package services
 import helpers.SDESStub
 import models.FailedJobResponses.FailedToProcessNotifications
 import models.SDESNotificationRecord
-import models.notification._
-import org.mongodb.scala.Document
-import org.scalatest.matchers.should.Matchers._
-import play.api.test.Helpers._
+import models.notification.*
+import org.mongodb.scala.{Document, ObservableFuture, SingleObservableFuture}
+import org.scalatest.matchers.should.Matchers.*
+import play.api.test.Helpers.*
 import repositories.FileNotificationRepository
 import uk.gov.hmrc.mongo.lock.MongoLockRepository
 import utils.Logger.logger
@@ -146,7 +146,7 @@ class SendFileNotificationsToSDESServiceISpec extends IntegrationSpecCommonBase 
           result.isLeft shouldBe true
           result.left.toOption.get shouldBe FailedToProcessNotifications
           logs.exists(_.getMessage.equals("[SendFileNotificationsToSDESService][invoke] - Received 500 status code from connector call to SDES with response body: Something broke")) shouldBe true
-          val pendingNotificationsInRepo: Seq[SDESNotificationRecord] = await(notificationRepo.getPendingNotifications())
+          val pendingNotificationsInRepo: Seq[SDESNotificationRecord] = await(notificationRepo.getPendingNotifications)
           val firstNotification: SDESNotificationRecord = pendingNotificationsInRepo.find(_.reference == "ref").get
           val secondNotification: SDESNotificationRecord = pendingNotificationsInRepo.find(_.reference == "ref1").get
           val thirdNotification: SDESNotificationRecord = pendingNotificationsInRepo.find(_.reference == "ref3").get

@@ -19,15 +19,15 @@ package services
 import helpers.SDESStub
 import models.SDESNotificationRecord
 import models.notification.RecordStatusEnum
-import org.mongodb.scala.Document
-import org.scalatest.matchers.should.Matchers._
-import play.api.test.Helpers._
+import org.mongodb.scala.{Document, ObservableFuture, SingleObservableFuture}
+import org.scalatest.matchers.should.Matchers.*
+import play.api.test.Helpers.*
 import repositories.FileNotificationRepository
 import scheduler.ScheduleStatus
 import uk.gov.hmrc.mongo.lock.MongoLockRepository
 import utils.{IntegrationSpecCommonBase, LogCapturing}
 
-import java.time.temporal.ChronoUnit.{SECONDS, MINUTES}
+import java.time.temporal.ChronoUnit.{MINUTES, SECONDS}
 import java.time.{Instant, LocalDateTime, ZoneOffset}
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
 

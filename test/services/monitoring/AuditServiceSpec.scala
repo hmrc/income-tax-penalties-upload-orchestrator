@@ -19,6 +19,8 @@ package services.monitoring
 import base.SpecBase
 import config.AppConfig
 import models.monitoring.JsonAuditModel
+import org.mockito.Mockito.*
+import utils.MockitoSugar.mock
 import org.mockito.ArgumentMatchers
 import play.api.libs.json._
 import play.api.test.FakeRequest

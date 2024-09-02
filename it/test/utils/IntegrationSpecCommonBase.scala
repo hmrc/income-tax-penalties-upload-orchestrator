@@ -19,7 +19,7 @@ package utils
 import com.codahale.metrics.SharedMetricRegistries
 import crypto.CryptoProvider
 import helpers.WiremockHelper
-import models.notification._
+import models.notification.*
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, TestSuite}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -28,8 +28,8 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.ws.{WSClient, WSRequest}
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 
-trait IntegrationSpecCommonBase extends AnyWordSpec with GuiceOneServerPerSuite with
-  BeforeAndAfterAll with BeforeAndAfterEach with TestSuite with WiremockHelper {
+trait IntegrationSpecCommonBase extends AnyWordSpec with GuiceOneServerPerSuite with BeforeAndAfterAll
+  with BeforeAndAfterEach with TestSuite with WiremockHelper {
 
   lazy val injector: Injector = app.injector
 

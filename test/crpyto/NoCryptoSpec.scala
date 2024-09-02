@@ -18,6 +18,7 @@ package crpyto
 
 import base.SpecBase
 import crypto.NoCrypto
+import org.mockito.Mockito.*
 import uk.gov.hmrc.crypto.{Crypted, PlainBytes, PlainText}
 
 import java.nio.charset.StandardCharsets
@@ -31,8 +32,8 @@ class NoCryptoSpec extends SpecBase {
     }
 
     "wrap the PlainBytes value in an Crypted object" in {
-      val result = NoCrypto.encrypt(PlainBytes(new Array[Byte](5)))
-      result shouldBe Crypted(new String(Base64.getEncoder.encode(new Array(5)), StandardCharsets.UTF_8))
+      val result: Crypted = NoCrypto.encrypt(PlainBytes(new Array[Byte](5)))
+      result shouldBe Crypted(new String(Base64.getEncoder.encode(new Array[Byte](5)), StandardCharsets.UTF_8))
     }
   }
 

@@ -18,14 +18,18 @@ package connectors
 
 import config.AppConfig
 import models.notification.SDESNotification
-import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpClient, HttpResponse}
+import play.api.libs.json.Json
+import play.api.libs.ws.writeableOf_JsValue
+import uk.gov.hmrc.http.HttpReads.Implicits.*
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpResponse}
 
+import java.net.URL
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class SDESConnector @Inject()(config: AppConfig,
-                              httpClient: HttpClient) {
+                              httpClient: HttpClientV2) {
 
   def sendNotificationToSDES(notification: SDESNotification)(implicit ec: ExecutionContext): Future[HttpResponse] = {
     val sdesHeaders = Seq(
@@ -33,10 +37,6 @@ class SDESConnector @Inject()(config: AppConfig,
       "Content-Type" -> "application/json"
     )
     implicit val headerCarrier: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(config.sdesOutboundBearerToken)))
-    httpClient.POST[SDESNotification, HttpResponse](
-      url = config.sdesUrl,
-      body = notification,
-      headers = sdesHeaders
-    )
+    httpClient.post(new URL(config.sdesUrl)).setHeader(sdesHeaders*).withBody(Json.toJson(notification)).execute[HttpResponse]
   }
 }

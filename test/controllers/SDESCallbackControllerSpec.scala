@@ -17,11 +17,12 @@
 package controllers
 
 import base.SpecBase
-import models.SDESFileNotificationEnum._
-import models.notification.RecordStatusEnum._
+import models.SDESFileNotificationEnum.*
+import models.notification.RecordStatusEnum.*
 import models.{Properties, SDESCallback, SDESFileNotificationEnum}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.*
 import org.scalatest.concurrent.Eventually.eventually
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, NO_CONTENT}
 import play.api.libs.json.{JsObject, JsValue, Json}
@@ -31,6 +32,7 @@ import services.HandleCallbackService
 import services.monitoring.AuditService
 import utils.LogCapturing
 import utils.Logger.logger
+import utils.MockitoSugar.mock
 import utils.PagerDutyHelper.PagerDutyKeys
 import utils.PagerDutyHelper.PagerDutyKeys.FAILED_TO_PROCESS_FILE_NOTIFICATION
 
@@ -40,11 +42,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class SDESCallbackControllerSpec extends SpecBase with LogCapturing {
-  val mockAuditService: AuditService = mock[AuditService]
-  val mockHandleCallbackService: HandleCallbackService = mock[HandleCallbackService]
-
   class Setup {
-    reset(mockAuditService, mockHandleCallbackService)
+    val mockAuditService: AuditService = mock[AuditService]
+    val mockHandleCallbackService: HandleCallbackService = mock[HandleCallbackService]
     val sdesCallbackController = new SDESCallbackController(mockAuditService, mockHandleCallbackService, stubControllerComponents())
   }
 
@@ -77,7 +77,7 @@ class SDESCallbackControllerSpec extends SpecBase with LogCapturing {
     s"return NO_CONTENT ($NO_CONTENT)" when {
       s"the JSON request body is valid - setting to $FILE_RECEIVED_IN_SDES when '$FileReceived' is returned" in new Setup {
         when(mockHandleCallbackService.updateNotificationAfterCallback(any(), ArgumentMatchers.eq(FILE_RECEIVED_IN_SDES))).thenReturn(Future.successful(Right((): Unit)))
-        val result: Future[Result] = sdesCallbackController.handleCallback()(fakeRequest.withJsonBody(sdesCallbackJson ++ Json.obj("notification" -> FileReceived)))
+        val result: Future[Result] = sdesCallbackController.handleCallback()(fakeRequest.withJsonBody(sdesCallbackJson ++ Json.obj("notification" -> "FILERECEIVED")))
         verify(mockAuditService)
           .audit(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
         status(result) shouldBe NO_CONTENT
@@ -85,7 +85,7 @@ class SDESCallbackControllerSpec extends SpecBase with LogCapturing {
 
       s"the JSON request body is valid - setting to $FILE_PROCESSED_IN_SDES when '$FileReady' is returned" in new Setup {
         when(mockHandleCallbackService.updateNotificationAfterCallback(any(), ArgumentMatchers.eq(FILE_PROCESSED_IN_SDES))).thenReturn(Future.successful(Right((): Unit)))
-        val result: Future[Result] = sdesCallbackController.handleCallback()(fakeRequest.withJsonBody(sdesCallbackJson ++ Json.obj("notification" -> FileReady)))
+        val result: Future[Result] = sdesCallbackController.handleCallback()(fakeRequest.withJsonBody(sdesCallbackJson ++ Json.obj("notification" -> "FILEREADY")))
         verify(mockAuditService)
           .audit(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
         status(result) shouldBe NO_CONTENT
@@ -93,7 +93,7 @@ class SDESCallbackControllerSpec extends SpecBase with LogCapturing {
 
       s"the JSON request body is valid - setting to $FILE_PROCESSED_IN_SDES when '$FileProcessed' is returned" in new Setup {
         when(mockHandleCallbackService.updateNotificationAfterCallback(any(), ArgumentMatchers.eq(FILE_PROCESSED_IN_SDES))).thenReturn(Future.successful(Right((): Unit)))
-        val result: Future[Result] = sdesCallbackController.handleCallback()(fakeRequest.withJsonBody(sdesCallbackJson ++ Json.obj("notification" -> FileProcessed)))
+        val result: Future[Result] = sdesCallbackController.handleCallback()(fakeRequest.withJsonBody(sdesCallbackJson ++ Json.obj("notification" -> "FILEPROCESSED")))
         verify(mockAuditService)
           .audit(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
         status(result) shouldBe NO_CONTENT
@@ -103,7 +103,7 @@ class SDESCallbackControllerSpec extends SpecBase with LogCapturing {
         when(mockHandleCallbackService.updateNotificationAfterCallback(any(), ArgumentMatchers.eq(FAILED_PENDING_RETRY))).thenReturn(Future.successful(Right((): Unit)))
         withCaptureOfLoggingFrom(logger) {
           logs => {
-            val result: Future[Result] = sdesCallbackController.handleCallback()(fakeRequest.withJsonBody(sdesCallbackJson ++ Json.obj("notification" -> FileProcessingFailure)))
+            val result: Future[Result] = sdesCallbackController.handleCallback()(fakeRequest.withJsonBody(sdesCallbackJson ++ Json.obj("notification" -> "FILEPROCESSINGFAILURE")))
             verify(mockAuditService)
               .audit(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
             status(result) shouldBe NO_CONTENT

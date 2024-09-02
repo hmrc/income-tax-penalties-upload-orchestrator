@@ -24,6 +24,8 @@ import play.api.http.Status.OK
 import play.api.mvc.Result
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status, stubControllerComponents}
 import repositories.FileNotificationRepository
+import org.mockito.Mockito.*
+import utils.MockitoSugar.mock
 
 import java.time.{LocalDateTime, ZoneOffset}
 import scala.concurrent.{ExecutionContext, Future}
@@ -39,7 +41,7 @@ class MongoQueryControllerSpec extends SpecBase {
 
   "getNumberOfRecords" should {
     s"return OK (${Status.OK}) with correct number of records" in new Setup {
-      when(mockRepo.countAllRecords()).thenReturn(Future.successful(5))
+      when(mockRepo.countAllRecords()).thenReturn(Future.successful(5L))
       val result: Future[Result] = controller.getNumberOfRecords()(fakeRequest)
       status(result) shouldBe OK
       contentAsString(result) shouldBe "5"
@@ -69,7 +71,7 @@ class MongoQueryControllerSpec extends SpecBase {
       )))
       val result: Future[Result] = controller.getNotificationsInState(filterValues:_*)(fakeRequest)
       status(result) shouldBe OK
-      contentAsString(result) shouldBe """[{"reference":"57d34e2b-36fe-0399-8a9c-efcfc5aa2a93","status":"PENDING","numberOfAttempts":0,"createdAt":{"$date":{"$numberLong":"1577840460000"}},"updatedAt":{"$date":{"$numberLong":"1580608920000"}},"nextAttemptAt":{"$date":{"$numberLong":"1583204580000"}},"notification":{"informationType":"foo","file":{"recipientOrSender":"recipient1","name":"file1.txt","location":"http://example.com/file1.txt","checksum":{"algorithm":"SHA-256","value":"check123"},"size":1,"properties":[{"name":"name","value":"value"}]},"audit":{"correlationID":"correlationID"}}}]"""
+      contentAsString(result) shouldBe """[{"reference":"57d34e2b-36fe-0399-8a9c-efcfc5aa2a93","updatedAt":{"$date":{"$numberLong":"1580608920000"}},"notification":{"informationType":"foo","file":{"name":"file1.txt","location":"http://example.com/file1.txt","size":1,"checksum":{"algorithm":"SHA-256","value":"check123"},"properties":[{"name":"name","value":"value"}],"recipientOrSender":"recipient1"},"audit":{"correlationID":"correlationID"}},"nextAttemptAt":{"$date":{"$numberLong":"1583204580000"}},"status":"PENDING","createdAt":{"$date":{"$numberLong":"1577840460000"}},"numberOfAttempts":0}]"""
     }
   }
 }
