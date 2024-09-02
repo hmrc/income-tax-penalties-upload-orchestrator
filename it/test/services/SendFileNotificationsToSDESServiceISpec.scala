@@ -19,10 +19,10 @@ package services
 import helpers.SDESStub
 import models.FailedJobResponses.FailedToProcessNotifications
 import models.SDESNotificationRecord
-import models.notification._
-import org.mongodb.scala.Document
-import org.scalatest.matchers.should.Matchers._
-import play.api.test.Helpers._
+import models.notification.*
+import org.mongodb.scala.{Document, ObservableFuture, SingleObservableFuture}
+import org.scalatest.matchers.should.Matchers.*
+import play.api.test.Helpers.*
 import repositories.FileNotificationRepository
 import uk.gov.hmrc.mongo.lock.MongoLockRepository
 import utils.Logger.logger
@@ -32,8 +32,6 @@ import utils.{IntegrationSpecCommonBase, LogCapturing}
 import java.time.temporal.ChronoUnit.{MINUTES, SECONDS}
 import java.time.{Instant, LocalDateTime, ZoneId, ZoneOffset}
 import scala.concurrent.duration.DurationInt
-import org.mongodb.scala.SingleObservableFuture
-import org.mongodb.scala.ObservableFuture
 
 class SendFileNotificationsToSDESServiceISpec extends IntegrationSpecCommonBase with LogCapturing {
   val lockRepository: MongoLockRepository = injector.instanceOf[MongoLockRepository]

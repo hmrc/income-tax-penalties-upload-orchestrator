@@ -16,13 +16,12 @@
 
 package controllers
 
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers.*
 import play.api.http.Status.{BAD_REQUEST, NO_CONTENT}
 import play.api.libs.json.{JsValue, Json}
-import play.api.libs.ws.WSResponse
+import play.api.libs.ws.{WSResponse, writeableOf_JsValue}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import utils.IntegrationSpecCommonBase
-import play.api.libs.ws.writeableOf_JsValue
 
 class SDESCallbackControllerISpec extends IntegrationSpecCommonBase{
   val controller: SDESCallbackController = injector.instanceOf[SDESCallbackController]

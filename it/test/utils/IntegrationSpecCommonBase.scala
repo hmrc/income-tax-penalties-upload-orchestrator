@@ -19,7 +19,7 @@ package utils
 import com.codahale.metrics.SharedMetricRegistries
 import crypto.CryptoProvider
 import helpers.WiremockHelper
-import models.notification._
+import models.notification.*
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, TestSuite}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite

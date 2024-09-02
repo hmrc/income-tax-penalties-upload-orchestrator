@@ -17,19 +17,18 @@
 package repositories
 
 import models.SDESNotificationRecord
-import models.notification._
+import models.notification.*
+import org.mongodb.scala.{ObservableFuture, SingleObservableFuture}
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.result.DeleteResult
-import org.scalatest.matchers.should.Matchers._
-import play.api.test.Helpers._
+import org.scalatest.matchers.should.Matchers.*
+import play.api.test.Helpers.*
 import services.NotificationMongoService
 import utils.IntegrationSpecCommonBase
 
 import java.time.temporal.ChronoUnit
 import java.time.{LocalDateTime, ZoneId, ZoneOffset}
 import scala.concurrent.Future
-import org.mongodb.scala.SingleObservableFuture
-import org.mongodb.scala.ObservableFuture
 
 class FileNotificationRepositoryISpec extends IntegrationSpecCommonBase {
   lazy val repository: FileNotificationRepository = injector.instanceOf[FileNotificationRepository]
